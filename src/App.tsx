@@ -1,18 +1,12 @@
 import "./index.css";
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./context/auth-context";
 import VehicleRegistrationForm from "./components/vehicle-registration-form";
-import VehiclePage from "./pages/vehicle.page";
 import LoginPage from "./pages/login.page";
 import MainLayout from "./components/main-layout";
 import ErrorBoundary from "./components/error-boundary";
 import VehicleRegistrationList from "./components/vehicle-registration-list";
 import AuthMiddleware from "./components/auth-middleware";
-import VehicleRegistrationView from "./components/vehicle-registration-view";
 
 function App() {
   const router = createBrowserRouter([
@@ -22,36 +16,22 @@ function App() {
       children: [
         {
           index: true,
-          element: <Navigate to="vehicles" />,
+          element: <VehicleRegistrationForm />,
         },
         {
-          path: "login",
-          element: <LoginPage />,
-        },
-        {
-          path: "vehicles",
+          path: "requests",
           element: (
             <AuthMiddleware>
-              <VehiclePage />
+              <VehicleRegistrationList />
             </AuthMiddleware>
           ),
-          children: [
-            {
-              path: "view",
-              element: <VehicleRegistrationView />,
-            },
-            {
-              path: "register",
-              element: <VehicleRegistrationForm />,
-            },
-            {
-              path: "requests",
-              element: <VehicleRegistrationList />,
-            },
-          ],
         },
       ],
       errorElement: <ErrorBoundary />,
+    },
+    {
+      path: "login",
+      element: <LoginPage />,
     },
   ]);
 

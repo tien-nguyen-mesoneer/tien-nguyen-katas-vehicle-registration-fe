@@ -59,7 +59,6 @@ export const VehicleRegistrationFormSchema = z.object({
 });
 
 function VehicleRegistrationForm() {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [isReadOnly, setReadOnly] = useState(false);
@@ -70,7 +69,7 @@ function VehicleRegistrationForm() {
       firstName: "",
       lastName: "",
       dob: "",
-      email: user?.email,
+      email: undefined,
       gender: undefined,
       address: undefined,
       phone: undefined,
@@ -78,6 +77,9 @@ function VehicleRegistrationForm() {
   });
 
   async function handleGenerateCode() {
+    // Reset form state
+    form.clearErrors();
+
     // Trigger validation on required fields
     await form.trigger("firstName");
     await form.trigger("lastName");

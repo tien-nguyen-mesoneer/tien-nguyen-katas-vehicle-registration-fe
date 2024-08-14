@@ -40,26 +40,25 @@ export const VehicleRegistrationFormSchema = z.object({
     .trim()
     .min(2)
     .max(50)
-    .refine((value) => !/\d/.test(value), {
-      message: "Allow alphabetic characters only",
-    }),
+    .regex(/^[a-zA-Z]+$/, "Only alphabetical characters are allowed"),
   lastName: z
     .string()
     .trim()
     .min(2)
     .max(50)
-    .refine((value) => !/\d/.test(value), {
-      message: "Allow alphabetic characters only",
-    }),
+    .regex(/^[a-zA-Z]+$/, "Only alphabetical characters are allowed"),
   dob: z.string(),
   email: z.string().trim().email(),
   gender: z.enum([Gender.FEMALE, Gender.MALE]).optional(),
   address: z.string().trim().optional(),
-  phone: z.coerce.number({ message: "Allow numbers only." }).optional(),
+  phone: z
+    .string()
+    .length(10)
+    .regex(/^\d+$/, "Only numeric characters are allowed")
+    .optional(),
 });
 
 function VehicleRegistrationForm() {
-  const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [isReadOnly, setReadOnly] = useState(false);
 
@@ -68,8 +67,8 @@ function VehicleRegistrationForm() {
     defaultValues: {
       firstName: "",
       lastName: "",
-      dob: "",
-      email: undefined,
+      dob: undefined,
+      email: "",
       gender: undefined,
       address: undefined,
       phone: undefined,
@@ -85,6 +84,10 @@ function VehicleRegistrationForm() {
     await form.trigger("lastName");
     await form.trigger("dob");
     await form.trigger("email");
+
+    await form.trigger("gender");
+    await form.trigger("address");
+    await form.trigger("phone");
 
     const isFirstNameValid =
       !form.getFieldState("firstName").invalid &&
@@ -107,6 +110,9 @@ function VehicleRegistrationForm() {
       return;
     }
 
+    if (JSON.stringify(form.formState.errors) !== "{}") {
+      return;
+    }
     // 2. Generate code
     setCode(faker.vehicle.vrm());
 
@@ -258,7 +264,6 @@ function VehicleRegistrationForm() {
           </fieldset>
 
           <VehicleRegistrationConfirmDialog
-            onConfirm={() => navigate("/vehicles/view")}
             registration={{ ...form.getValues(), code }}
             renderDialogTrigger={({ isConfirmed }) => (
               <Button
@@ -292,18 +297,16 @@ const VehicleRegistrationConfirmDialog = ({
   renderDialogTrigger,
   onConfirm,
 }: VehicleRegistrationConfirmDialogProps) => {
-  const { user } = useAuth();
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   const handleConfirmInformation = async () => {
     // 1. Create a vehicle registration request at POST:/vehicles
     try {
       const data = await fetchData("/vehicles", "POST", {
-        body: JSON.stringify({ ...registration, userId: user?._id }),
+        body: JSON.stringify(registration),
       });
 
-      if (data) {
-        console.log("Vehicle registration created successfully!", data);
+      if (data.success) {
         // 2. Update state to mark the dialog is confirmed
         setIsConfirmed(true);
         // 3. Do anything as user has comfirmed the dialog

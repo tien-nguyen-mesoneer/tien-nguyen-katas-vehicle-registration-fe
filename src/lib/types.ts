@@ -3,10 +3,15 @@ import { z } from "zod";
 
 export type IVehicle = {
   _id: string;
-  userId: string;
-  user: IUser;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  dob?: string;
+  gender?: Gender;
+  address?: string;
+  phone?: string;
   code: string;
-  approved: boolean;
+  status: VehicleStatus;
 };
 
 export interface IRegistration
@@ -18,14 +23,6 @@ export type IUser = {
   _id: string;
   role: UserRole;
   email: string;
-  firstName?: string;
-  lastName?: string;
-  dob?: string;
-  gender?: Gender;
-  address?: string;
-  phone?: string;
-  vehicleId?: string;
-  vehicle?: IVehicle;
 };
 
 export type KataResponse = {
@@ -42,4 +39,10 @@ export enum UserRole {
 export enum Gender {
   MALE = "MALE",
   FEMALE = "FEMALE",
+}
+
+export enum VehicleStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
 }

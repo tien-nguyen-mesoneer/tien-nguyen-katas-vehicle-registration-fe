@@ -13,7 +13,7 @@ function VehicleRegistrationList({}: Props) {
     const getVehicles = async () => {
       try {
         const data = await fetchData("/vehicles", "GET");
-        if (data) {
+        if (data.success && data.data) {
           setVehicles(data.data as IVehicle[]);
         }
       } catch (error) {
@@ -25,7 +25,7 @@ function VehicleRegistrationList({}: Props) {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col max-w-xl p-6 space-y-6 border-r">
+    <div className="h-screen flex flex-col max-w-xl p-6 border-r">
       <div>
         <p className="text-lg font-medium">Vehicle Registry</p>
         <p className="text-sm text-muted-foreground">

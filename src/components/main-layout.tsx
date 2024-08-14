@@ -57,7 +57,7 @@ function MainLayout() {
           </TooltipProvider>
         );
     });
-  }, [user?.role, user?.vehicle]);
+  }, [user?.role]);
 
   return (
     <div className="h-screen w-screen flex justify-center items-center">
